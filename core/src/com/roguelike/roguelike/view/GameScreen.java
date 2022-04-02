@@ -3,6 +3,7 @@ package com.roguelike.roguelike.view;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,13 +14,18 @@ public class GameScreen implements Screen {
     private Texture texture;
     private SpriteBatch batch;
     private Hero hero;
+    private OrthographicCamera camera;
+
+    //framerate
+    public static float deltaCff;
 
     //Вызывается когда в игре мы переключаемся на этот экран
     @Override
     public void show() {
         batch = new SpriteBatch();
         texture = new Texture(Gdx.files.internal("hero.png"));
-        hero = new Hero(texture, 0, 0, 80, 80);
+        texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        hero = new Hero(texture, 0, 0, 2f, 2f);
     }
 
     //Итеративный метод, вызывается итеративно с промежутком в delta секунд
@@ -29,7 +35,10 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        deltaCff = delta;
+
         //positionY++;
+        batch.setProjectionMatrix(camera.combined);
         batch.begin();
         hero.draw(batch);
         batch.end();
@@ -38,7 +47,8 @@ public class GameScreen implements Screen {
     //Вызывается при изменении размеров экрана
     @Override
     public void resize(int width, int height) {
-
+        float aspectRatio = (float) height / width;
+        camera = new OrthographicCamera(20f, 20f * aspectRatio);
     }
 
     //Вызывается когда сворачиваем окошко с игрой
