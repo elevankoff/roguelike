@@ -5,15 +5,19 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.roguelike.roguelike.model.Hero;
+import com.roguelike.roguelike.model.Mob;
+import java.util.Random;
 
 public class GameScreen implements Screen {
 
     private Texture texture;
+    private Texture mobTexture;
     private SpriteBatch batch;
     private Hero hero;
+    private Mob mob;
     private OrthographicCamera camera;
 
     //framerate
@@ -25,7 +29,10 @@ public class GameScreen implements Screen {
         batch = new SpriteBatch();
         texture = new Texture(Gdx.files.internal("hero.png"));
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        mobTexture = new Texture(Gdx.files.internal("monster.png"));
+        final Random random = new Random();
         hero = new Hero(texture, 0, 0, 2f, 2f);
+        mob = new Mob(mobTexture, random.nextFloat(), random.nextFloat(), 2f, 2f, hero.bounds);
     }
 
     //Итеративный метод, вызывается итеративно с промежутком в delta секунд
@@ -41,6 +48,7 @@ public class GameScreen implements Screen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         hero.draw(batch);
+        mob.draw(batch);
         batch.end();
     }
 

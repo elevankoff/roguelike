@@ -1,24 +1,23 @@
 package com.roguelike.roguelike.model;
 
-//import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.roguelike.roguelike.control.HeroController;
+import com.badlogic.gdx.math.Polygon;
+import com.roguelike.roguelike.control.MobController;
 
-public class Hero extends GameObject{
+public class Mob extends GameObject{
 
     public static float verticalSpeed = 3f;
     public static float horizontalSpeed = 3f;
-    private HeroController heroController;
-    public Hero(Texture texture, float x, float y, float width, float height) {
+    private MobController mobController;
+    public Mob(Texture texture, float x, float y, float width, float height, Polygon heroBounds) {
         super(texture, x, y, width, height);
-        heroController = new HeroController(bounds);
+        mobController = new MobController(bounds, heroBounds);
     }
 
     @Override
     public void draw(SpriteBatch batch) {
         super.draw(batch);
-        heroController.handle();
+        mobController.handle();
     }
-
 }
