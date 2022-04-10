@@ -1,5 +1,4 @@
 android {
-    buildToolsVersion "29.0.3"
     compileSdkVersion 30
     sourceSets {
         main {
@@ -28,6 +27,10 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
 
