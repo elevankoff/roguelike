@@ -5,19 +5,23 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.roguelike.roguelike.control.HeroController;
+import com.roguelike.roguelike.model.AliveObject;
 import com.roguelike.roguelike.model.GameObjectType;
-import com.roguelike.roguelike.model.Hero;
+import com.roguelike.roguelike.model.HeroFactory;
+import com.roguelike.roguelike.model.map.MapManager;
 
 import java.util.Map;
 
 public class GameScreen implements Screen {
     private final Map<GameObjectType, Texture> textures;
-    private SpriteBatch batch;
     private OrthographicCamera camera;
-    private Hero hero;
+    private AliveObject hero;
     private HeroController heroController;
+    private MapManager mapManager;
+    private OrthogonalTiledMapRenderer mapRenderer;
 
     public GameScreen() {
         textures = TexturesFactory.create();
@@ -26,8 +30,12 @@ public class GameScreen implements Screen {
     //Вызывается когда в игре мы переключаемся на этот экран
     @Override
     public void show() {
-        batch = new SpriteBatch();
-        hero = HeroFactory.create(textures.get(GameObjectType.HERO));
+        camera = new OrthographicCamera();
+        mapManager = new MapManager();
+        mapRenderer = new OrthogonalTiledMapRenderer(mapManager.getCurrentMap(), MapManager.UNIT_SCALE);
+        mapRenderer.setView(camera);
+
+        hero = HeroFactory.create(textures.get(GameObjectType.HERO), 2f, 2f);
         heroController = new HeroController(hero);
         Gdx.input.setInputProcessor(heroController);
     }
@@ -39,16 +47,18 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        hero.update();
+        camera.update();
+
         heroController.update(delta);
+        hero.update();
 
-        //positionY++;
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
+        Sprite heroSprite = hero.getSprite();
+        mapRenderer.setView(camera);
+        mapRenderer.render();
 
-        hero.draw(batch);
-
-        batch.end();
+        mapRenderer.getBatch().begin();
+        mapRenderer.getBatch().draw(heroSprite.getTexture(), hero.getX(), hero.getY(), heroSprite.getWidth(), heroSprite.getHeight());
+        mapRenderer.getBatch().end();
     }
 
     //Вызывается при изменении размеров экрана
@@ -81,6 +91,7 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         textures.forEach((type, texture) -> texture.dispose());
-        batch.dispose();
+        Gdx.input.setInputProcessor(null);
+        mapRenderer.dispose();
     }
 }

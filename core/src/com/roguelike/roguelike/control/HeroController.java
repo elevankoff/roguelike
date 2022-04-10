@@ -4,19 +4,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
-import com.roguelike.roguelike.model.Hero;
+import com.roguelike.roguelike.model.AliveObject;
 
 public class HeroController implements InputProcessor {
-    private final Hero hero;
+    private final AliveObject hero;
     private Vector2 currentDirection;
 
-    public HeroController(Hero hero) {
+    public HeroController(AliveObject hero) {
         this.hero = hero;
         this.currentDirection = Vector2.Zero;
     }
 
     public void update(float delta) {
         move(currentDirection.x * delta, currentDirection.y * delta);
+    }
+
+    public void move(float difX, float difY) {
+        hero.setPosition(hero.getX() + difX, hero.getY() + difY);
     }
 
     @Override
@@ -68,10 +72,10 @@ public class HeroController implements InputProcessor {
     private float getCurHorizontalSpeed() {
         float currentHorizontalSpeed = 0;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            currentHorizontalSpeed += Hero.HORIZONTAL_SPEED;
+            currentHorizontalSpeed += hero.getHorizontalSpeed();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            currentHorizontalSpeed -= Hero.HORIZONTAL_SPEED;
+            currentHorizontalSpeed -= hero.getHorizontalSpeed();
         }
         return currentHorizontalSpeed;
     }
@@ -79,15 +83,11 @@ public class HeroController implements InputProcessor {
     private float getCurVerticalSpeed() {
         float currentVerticalSpeed = 0;
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            currentVerticalSpeed += Hero.VERTICAL_SPEED;
+            currentVerticalSpeed += hero.getVerticalSpeed();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            currentVerticalSpeed -= Hero.VERTICAL_SPEED;
+            currentVerticalSpeed -= hero.getVerticalSpeed();
         }
         return currentVerticalSpeed;
-    }
-
-    public void move(float difX, float difY) {
-        hero.setPosition(hero.getX() + difX, hero.getY() + difY);
     }
 }

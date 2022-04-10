@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 
-public abstract class GameObject {
+public class GameObject {
     protected final Polygon bounds;
     protected final Sprite object;
 
@@ -20,9 +20,12 @@ public abstract class GameObject {
     }
 
     public void update() {
-        //object.setBounds(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
         object.setPosition(bounds.getX(), bounds.getY());
         object.setRotation(bounds.getRotation());
+    }
+
+    public Sprite getSprite() {
+        return object;
     }
 
     public void draw(SpriteBatch batch) {
