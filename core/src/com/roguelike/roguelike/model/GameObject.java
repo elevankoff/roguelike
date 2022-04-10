@@ -5,10 +5,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 
-public abstract class GameObject {
+public class GameObject {
+    protected final Polygon bounds;
+    protected final Sprite object;
 
-    Polygon bounds;
-    Sprite object;
     public GameObject(Texture texture, float x, float y, float width, float height) {
         bounds = new Polygon(new float[]{0f, 0f, width, 0f, width, height, 0f, height});
         bounds.setPosition(x, y);
@@ -17,17 +17,30 @@ public abstract class GameObject {
         object = new Sprite(texture);
         object.setSize(width, height);
         object.setOrigin(width / 2f, height / 2f);
+    }
 
+    public void update() {
+        object.setPosition(bounds.getX(), bounds.getY());
+        object.setRotation(bounds.getRotation());
+    }
+
+    public Sprite getSprite() {
+        return object;
     }
 
     public void draw(SpriteBatch batch) {
-        //object.setBounds(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-        object.setPosition(bounds.getX(), bounds.getY());
-        object.setRotation(bounds.getRotation());
         object.draw(batch);
     }
 
-    public void dispose() {
+    public void setPosition(float x, float y) {
+        bounds.setPosition(x, y);
+    }
 
+    public float getX() {
+        return bounds.getX();
+    }
+
+    public float getY() {
+        return bounds.getY();
     }
 }

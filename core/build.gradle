@@ -1,5 +1,6 @@
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+//compileJava.options.forkOptions.executable = "/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/bin/java"
 
 sourceSets.main.java.srcDirs = [ "src/" ]
 

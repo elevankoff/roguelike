@@ -6,26 +6,38 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.roguelike.roguelike.model.Hero;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.roguelike.roguelike.control.HeroController;
+import com.roguelike.roguelike.model.AliveObject;
+import com.roguelike.roguelike.model.GameObjectType;
+import com.roguelike.roguelike.model.HeroFactory;
+import com.roguelike.roguelike.model.map.MapManager;
+
+import java.util.Map;
 
 public class GameScreen implements Screen {
-
-    private Texture texture;
-    private SpriteBatch batch;
-    private Hero hero;
+    private final Map<GameObjectType, Texture> textures;
     private OrthographicCamera camera;
+    private AliveObject hero;
+    private HeroController heroController;
+    private MapManager mapManager;
+    private OrthogonalTiledMapRenderer mapRenderer;
 
-    //framerate
-    public static float deltaCff;
+    public GameScreen() {
+        textures = TexturesFactory.create();
+    }
 
     //Вызывается когда в игре мы переключаемся на этот экран
     @Override
     public void show() {
-        batch = new SpriteBatch();
-        texture = new Texture(Gdx.files.internal("hero.png"));
-        texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        hero = new Hero(texture, 0, 0, 2f, 2f);
+        camera = new OrthographicCamera();
+        mapManager = new MapManager();
+        mapRenderer = new OrthogonalTiledMapRenderer(mapManager.getCurrentMap(), MapManager.UNIT_SCALE);
+        mapRenderer.setView(camera);
+
+        hero = HeroFactory.create(textures.get(GameObjectType.HERO), 2f, 2f);
+        heroController = new HeroController(hero);
+        Gdx.input.setInputProcessor(heroController);
     }
 
     //Итеративный метод, вызывается итеративно с промежутком в delta секунд
@@ -35,13 +47,18 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        deltaCff = delta;
+        camera.update();
 
-        //positionY++;
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        hero.draw(batch);
-        batch.end();
+        heroController.update(delta);
+        hero.update();
+
+        Sprite heroSprite = hero.getSprite();
+        mapRenderer.setView(camera);
+        mapRenderer.render();
+
+        mapRenderer.getBatch().begin();
+        mapRenderer.getBatch().draw(heroSprite.getTexture(), hero.getX(), hero.getY(), heroSprite.getWidth(), heroSprite.getHeight());
+        mapRenderer.getBatch().end();
     }
 
     //Вызывается при изменении размеров экрана
@@ -70,9 +87,11 @@ public class GameScreen implements Screen {
     }
 
     //Вызывается когда закрываем игру (уничтожение всех ресурсов)
+    @SuppressWarnings("NewApi")
     @Override
     public void dispose() {
-        texture.dispose();
-        batch.dispose();
+        textures.forEach((type, texture) -> texture.dispose());
+        Gdx.input.setInputProcessor(null);
+        mapRenderer.dispose();
     }
 }
