@@ -13,9 +13,6 @@ import com.roguelike.roguelike.model.Hero;
 import java.util.Map;
 
 public class GameScreen implements Screen {
-    //framerate
-    public static float deltaCff;
-
     private final Map<GameObjectType, Texture> textures;
     private SpriteBatch batch;
     private OrthographicCamera camera;
@@ -42,7 +39,6 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        deltaCff = delta;
         hero.update();
         heroController.update(delta);
 

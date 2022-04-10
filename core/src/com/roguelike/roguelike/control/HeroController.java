@@ -7,19 +7,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.roguelike.roguelike.model.Hero;
 
 public class HeroController implements InputProcessor {
-    private static final float VERTICAL_SPEED = Hero.VERTICAL_SPEED;;
-    private static final float HORIZONTAL_SPEED = Hero.HORIZONTAL_SPEED;
-
     private final Hero hero;
-    private Vector2 direction;
+    private Vector2 currentDirection;
 
     public HeroController(Hero hero) {
         this.hero = hero;
-        this.direction = Vector2.Zero;
+        this.currentDirection = Vector2.Zero;
     }
 
     public void update(float delta) {
-        move(direction.x * delta, direction.y * delta);
+        move(currentDirection.x * delta, currentDirection.y * delta);
     }
 
     @Override
@@ -35,7 +32,7 @@ public class HeroController implements InputProcessor {
     }
 
     private void processInput() {
-        direction = new Vector2(getCurHorizontalSpeed(), getCurVerticalSpeed());
+        currentDirection = new Vector2(getCurHorizontalSpeed(), getCurVerticalSpeed());
     }
 
     @Override
@@ -69,25 +66,25 @@ public class HeroController implements InputProcessor {
     }
 
     private float getCurHorizontalSpeed() {
-        float curHorizontalSpeed = 0;
+        float currentHorizontalSpeed = 0;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            curHorizontalSpeed += HORIZONTAL_SPEED;
+            currentHorizontalSpeed += Hero.HORIZONTAL_SPEED;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            curHorizontalSpeed -= HORIZONTAL_SPEED;
+            currentHorizontalSpeed -= Hero.HORIZONTAL_SPEED;
         }
-        return curHorizontalSpeed;
+        return currentHorizontalSpeed;
     }
 
     private float getCurVerticalSpeed() {
-        float curVerticalSpeed = 0;
+        float currentVerticalSpeed = 0;
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            curVerticalSpeed += VERTICAL_SPEED;
+            currentVerticalSpeed += Hero.VERTICAL_SPEED;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            curVerticalSpeed -= VERTICAL_SPEED;
+            currentVerticalSpeed -= Hero.VERTICAL_SPEED;
         }
-        return curVerticalSpeed;
+        return currentVerticalSpeed;
     }
 
     public void move(float difX, float difY) {
