@@ -14,14 +14,6 @@ public class HeroFactory {
     private static final int HERO_START_STRENGTH = 2;
 
     public static Hero create(Texture heroTexture) {
-        return Hero.builder()
-                .setHealth(HERO_START_HEALTH)
-                .setStrength(HERO_START_STRENGTH)
-                .setTexture(heroTexture)
-                .setHeight(HERO_HEIGHT)
-                .setWidth(HERO_WIDTH)
-                .setX(SPAWN_X)
-                .setY(SPAWN_Y)
-                .build();
+        return new Hero(heroTexture, SPAWN_X, SPAWN_Y, HERO_WIDTH, HERO_HEIGHT, HERO_START_HEALTH, HERO_START_STRENGTH);
     }
 }

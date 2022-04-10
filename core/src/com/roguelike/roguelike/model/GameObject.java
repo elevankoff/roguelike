@@ -40,39 +40,4 @@ public abstract class GameObject {
     public float getY() {
         return bounds.getY();
     }
-
-    public static abstract class Builder<T extends GameObject> {
-        protected Texture texture;
-        protected float x = 0f;
-        protected float y = 0f;
-        protected float width = 1f;
-        protected float height = 1f;
-
-        public abstract T build();
-
-        public Builder<T> setTexture(Texture texture) {
-            this.texture = texture;
-            return this;
-        }
-
-        public Builder<T> setX(float x) {
-            this.x = x;
-            return this;
-        }
-
-        public Builder<T> setY(float y) {
-            this.y = y;
-            return this;
-        }
-
-        public Builder<T> setWidth(float width) {
-            this.width = width;
-            return this;
-        }
-
-        public Builder<T> setHeight(float height) {
-            this.height = height;
-            return this;
-        }
-    }
 }
