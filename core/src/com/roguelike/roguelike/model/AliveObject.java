@@ -30,4 +30,6 @@ public class AliveObject extends GameObject {
     public float getHorizontalSpeed() {
         return horizontalSpeed;
     }
+
+
 }

@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class GameScreen implements Screen {
     private final Map<GameObjectType, Texture> textures;
-    private OrthographicCamera camera;
+    private OrthographicCamera camera = new OrthographicCamera();
     private AliveObject hero;
     private HeroController heroController;
     private MapManager mapManager;
@@ -30,12 +30,12 @@ public class GameScreen implements Screen {
     //Вызывается когда в игре мы переключаемся на этот экран
     @Override
     public void show() {
-        camera = new OrthographicCamera();
         mapManager = new MapManager();
         mapRenderer = new OrthogonalTiledMapRenderer(mapManager.getCurrentMap(), MapManager.UNIT_SCALE);
         mapRenderer.setView(camera);
+        camera.setToOrtho(false, 32 * 30, 32*20);
 
-        hero = HeroFactory.create(textures.get(GameObjectType.HERO), 2f, 2f);
+        hero = HeroFactory.create(textures.get(GameObjectType.HERO), 30f, 8f);
         heroController = new HeroController(hero);
         Gdx.input.setInputProcessor(heroController);
     }
@@ -47,10 +47,11 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.update();
-
         heroController.update(delta);
         hero.update();
+
+        camera.position.set(hero.getX(), hero.getY(), 0);
+        camera.update();
 
         Sprite heroSprite = hero.getSprite();
         mapRenderer.setView(camera);
@@ -66,6 +67,7 @@ public class GameScreen implements Screen {
     public void resize(int width, int height) {
         float aspectRatio = (float) height / width;
         camera = new OrthographicCamera(20f, 20f * aspectRatio);
+        camera.position.set(20f/2f, 20f * aspectRatio / 2f, 0f);
     }
 
     //Вызывается когда сворачиваем окошко с игрой
