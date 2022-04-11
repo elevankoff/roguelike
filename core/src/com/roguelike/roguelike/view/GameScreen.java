@@ -50,7 +50,7 @@ public class GameScreen implements Screen {
         heroController.update(delta);
         hero.update();
 
-        camera.position.set(hero.getX(), hero.getY(), 0);
+        camera.position.set(hero.getX() + hero.getSprite().getWidth() / 2, hero.getY() + hero.getSprite().getHeight() / 2, 0);
         camera.update();
 
         Sprite heroSprite = hero.getSprite();
