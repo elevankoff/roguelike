@@ -6,11 +6,13 @@ public class MapConfig {
     private final MapName mapName;
     private final String loadPath;
     private final Vector2 playerStartPosition;
+    private final Vector2 bossStartPosition;
 
-    public MapConfig(MapName mapName, String loadPath, Vector2 playerStartPosition) {
+    public MapConfig(MapName mapName, String loadPath, Vector2 playerStartPosition, Vector2 bossStartPosition) {
         this.mapName = mapName;
         this.loadPath = loadPath;
         this.playerStartPosition = playerStartPosition;
+        this.bossStartPosition = bossStartPosition;
     }
 
     public MapName getMapName() {
@@ -25,9 +27,14 @@ public class MapConfig {
         return playerStartPosition;
     }
 
+    public Vector2 getBossStartPosition() {
+        return bossStartPosition;
+    }
+
     public static final MapConfig START = new MapConfig(
             MapName.START,
-            "map.tmx",
-            Vector2.Zero
+            "/Users/elevankoff/Desktop/IdeaProjects/roguelike/map.tmx",
+            new Vector2(1, 140),
+            new Vector2(640, 380)
     );
 }

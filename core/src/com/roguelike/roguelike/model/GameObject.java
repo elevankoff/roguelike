@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
 
 public class GameObject {
     protected final Polygon bounds;
@@ -36,11 +37,19 @@ public class GameObject {
         bounds.setPosition(x, y);
     }
 
+    public void setPosition(Vector2 position) {
+        setPosition(position.x, position.y);
+    }
+
     public float getX() {
         return bounds.getX();
     }
 
     public float getY() {
         return bounds.getY();
+    }
+
+    public Vector2 getPosition() {
+        return new Vector2(getX(), getY());
     }
 }

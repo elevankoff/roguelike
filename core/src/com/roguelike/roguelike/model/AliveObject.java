@@ -3,6 +3,7 @@ package com.roguelike.roguelike.model;
 import com.badlogic.gdx.graphics.Texture;
 
 public class AliveObject extends GameObject {
+    protected final int maxHealth;
     protected int health;
     protected int strength;
     protected float verticalSpeed;
@@ -12,15 +13,24 @@ public class AliveObject extends GameObject {
             Texture texture,
             float x, float y,
             float width, float height,
-            int health, int strength,
+            int maxHealth, int strength,
             float verticalSpeed,
             float horizontalSpeed)
     {
         super(texture, x, y, width, height);
-        this.health = health;
+        this.maxHealth = maxHealth;
+        this.health = maxHealth;
         this.strength = strength;
         this.verticalSpeed = verticalSpeed;
         this.horizontalSpeed = horizontalSpeed;
+    }
+
+    public float getHealthPercent() {
+        return (float) health / maxHealth;
+    }
+
+    public int getStrength() {
+        return strength;
     }
 
     public float getVerticalSpeed() {
@@ -31,5 +41,7 @@ public class AliveObject extends GameObject {
         return horizontalSpeed;
     }
 
-
+    public void hit(int attackStrength) {
+        this.health = Math.max(0, health - attackStrength);
+    }
 }
