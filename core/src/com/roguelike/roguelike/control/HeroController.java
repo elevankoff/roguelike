@@ -3,24 +3,45 @@ package com.roguelike.roguelike.control;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.roguelike.roguelike.model.AliveObject;
+import com.roguelike.roguelike.model.GameContext;
+
+import java.util.List;
 
 public class HeroController implements InputProcessor {
+    private static final int ATTACK_RADIUS = 20; // todo: make configurable
+
     private final AliveObject hero;
     private Vector2 currentDirection;
+    private GameContext gameContext;
 
-    public HeroController(AliveObject hero) {
+    public HeroController(AliveObject hero, GameContext gameContext) {
         this.hero = hero;
         this.currentDirection = Vector2.Zero;
+        this.gameContext = gameContext;
+    }
+
+    public Vector2 getNextPosition(float delta) {
+        processInput();
+        Vector2 nextDirection = getNextDirection(delta);
+        Vector2 currentPosition = hero.getPosition();
+        return currentPosition.cpy().add(nextDirection);
+    }
+
+    private Vector2 getNextDirection(float delta) {
+        processInput();
+        return new Vector2(currentDirection.x * delta, currentDirection.y * delta);
     }
 
     public void update(float delta) {
-        move(currentDirection.x * delta, currentDirection.y * delta);
+        move(getNextDirection(delta));
     }
 
-    public void move(float difX, float difY) {
-        hero.setPosition(hero.getX() + difX, hero.getY() + difY);
+    public void move(Vector2 direction) {
+        hero.setPosition(hero.getPosition().cpy().add(direction));
     }
 
     @Override
@@ -35,8 +56,18 @@ public class HeroController implements InputProcessor {
         return true;
     }
 
+    @SuppressWarnings("NewApi")
     private void processInput() {
         currentDirection = new Vector2(getCurHorizontalSpeed(), getCurVerticalSpeed());
+        if (isAttacking()) {
+            List<AliveObject> mobs = gameContext.getMobs();
+            Circle attackCircle = new Circle(hero.getPosition(), ATTACK_RADIUS);
+            mobs.forEach(mob -> {
+                if (Intersector.overlaps(attackCircle, mob.getSprite().getBoundingRectangle())) {
+                    mob.hit(hero.getStrength());
+                }
+            });
+        }
     }
 
     @Override
@@ -89,5 +120,9 @@ public class HeroController implements InputProcessor {
             currentVerticalSpeed -= hero.getVerticalSpeed();
         }
         return currentVerticalSpeed;
+    }
+
+    private boolean isAttacking() {
+        return Gdx.input.isKeyPressed(Input.Keys.SPACE);
     }
 }

@@ -9,10 +9,14 @@ import java.util.Map;
 
 public class TexturesFactory {
     private static final String HERO_TEXTURE_PATH = "hero.png";
+    private static final String MOB_TEXTURE_PATH = "monster.png"; // todo: make separate texture
+    private static final String HEALTH_TEXTURE_PATH = "health.jpeg";
 
     public static Map<GameObjectType, Texture> create() {
         Map<GameObjectType, Texture> textures = new HashMap<>();
         textures.put(GameObjectType.HERO, getHeroTexture());
+        textures.put(GameObjectType.MOB, getMobTexture());
+        textures.put(GameObjectType.HEALTH_LINE, getHealthTexture());
         return textures;
     }
 
@@ -20,5 +24,17 @@ public class TexturesFactory {
         Texture heroTexture = new Texture(Gdx.files.internal(HERO_TEXTURE_PATH));
         heroTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         return heroTexture;
+    }
+
+    private static Texture getMobTexture() {
+        Texture mobTexture = new Texture(Gdx.files.internal(MOB_TEXTURE_PATH));
+        mobTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        return mobTexture;
+    }
+
+    private static Texture getHealthTexture() {
+        Texture mobTexture = new Texture(Gdx.files.internal(HEALTH_TEXTURE_PATH));
+        mobTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        return mobTexture;
     }
 }
