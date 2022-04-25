@@ -33,8 +33,8 @@ public class GameScreen implements Screen {
     private MapManager mapManager;
     private OrthogonalTiledMapRenderer mapRenderer;
 
-    private final int GAME_WORLD_HEIGHT = 640;
-    private final int GAME_WORLD_WIDTH = 960;
+    private final int GAME_WORLD_HEIGHT = 20 * 32;
+    private final int GAME_WORLD_WIDTH = 30 * 32;
 
     public GameScreen() {
         textures = TexturesFactory.create();
