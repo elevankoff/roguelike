@@ -1,7 +1,9 @@
 package com.roguelike.roguelike.view;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,6 +14,14 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.roguelike.roguelike.ScreenManager;
 import com.roguelike.roguelike.control.HeroController;
 import com.roguelike.roguelike.model.AliveObject;
 import com.roguelike.roguelike.model.GameContext;
@@ -23,7 +33,7 @@ import com.roguelike.roguelike.model.map.MapManager;
 
 import java.util.Map;
 
-public class GameScreen implements Screen {
+public class GameScreen extends AbstractScreen{
     private final Map<GameObjectType, Texture> textures;
     private final HealthSpriteFactory healthSpriteFactory;
     private OrthographicCamera camera;
@@ -32,13 +42,27 @@ public class GameScreen implements Screen {
     private HeroController heroController;
     private MapManager mapManager;
     private OrthogonalTiledMapRenderer mapRenderer;
+    private AssetManager assetManager;
+    private Skin skin;
 
-    private final int GAME_WORLD_HEIGHT = 640;
-    private final int GAME_WORLD_WIDTH = 960;
+    private Stage stage;
+
+    private Table mainTable;
+
+    private final int GAME_WORLD_HEIGHT = 20 * 32;
+    private final int GAME_WORLD_WIDTH = 30 * 32;
 
     public GameScreen() {
+        Assets assets = new Assets();
+        assets.loadAll();
+        assetManager = assets.getAssetManager();
+        skin = assetManager.get(Assets.SKIN);
         textures = TexturesFactory.create();
         healthSpriteFactory = new HealthSpriteFactory(textures.get(GameObjectType.HEALTH_LINE));
+
+        mainTable = new Table();
+        stage = new Stage();
+        stage.addActor(mainTable);
     }
 
     //Вызывается когда в игре мы переключаемся на этот экран
@@ -51,6 +75,13 @@ public class GameScreen implements Screen {
         mapRenderer = new OrthogonalTiledMapRenderer(mapManager.getCurrentMap(), 1f);
         mapRenderer.setView(camera);
 
+        mainTable.setPosition(camera.viewportWidth * 2.5f, camera.viewportHeight * 2.8f);
+        addButton("x").addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ScreenManager.getInstance().showScreen(ScreenEnum.MAIN_MENU);
+            }
+        });
         MapConfig mapConfig = mapManager.getCurrentMapConfig();
         Vector2 heroStartPosition = mapConfig.getPlayerStartPosition();
         HeroFactory heroFactory = new HeroFactory();
@@ -61,7 +92,11 @@ public class GameScreen implements Screen {
 
         GameContext gameContext = createGameContext(mob, hero);
         heroController = new HeroController(hero, gameContext);
-        Gdx.input.setInputProcessor(heroController);
+
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(stage);
+        multiplexer.addProcessor(heroController);
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
     private GameContext createGameContext(AliveObject mob, AliveObject hero) {
@@ -74,9 +109,17 @@ public class GameScreen implements Screen {
     //private float positionY = 0f;
     @Override
     public void render(float delta) {
-        System.out.println(camera.viewportWidth + " " + camera.viewportHeight);
         update(delta);
         renderInner();
+        stage.act(delta);
+        stage.draw();
+    }
+
+    private TextButton addButton(String name) {
+        TextButton button = new TextButton(name, skin);
+        mainTable.add(button).width(60).height(60);
+        mainTable.row();
+        return button;
     }
 
     private void update(float delta) {
