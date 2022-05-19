@@ -185,6 +185,9 @@ public class GameScreen extends AbstractScreen{
     }
 
     private void drawAliveObject(Batch mapBatch, AliveObject aliveObject) {
+        if (aliveObject.isDead()) {
+            return;
+        }
         Sprite sprite = aliveObject.getSprite();
         mapBatch.draw(sprite.getTexture(), aliveObject.getX(), aliveObject.getY(), sprite.getWidth(), sprite.getHeight());
         Sprite healthSprite = healthSpriteFactory.create(aliveObject);

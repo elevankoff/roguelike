@@ -25,6 +25,14 @@ public class AliveObject extends GameObject {
         this.horizontalSpeed = horizontalSpeed;
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public boolean isDead() {
+        return health <= 0;
+    }
+
     public float getHealthPercent() {
         return (float) health / maxHealth;
     }

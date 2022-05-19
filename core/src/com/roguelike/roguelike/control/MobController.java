@@ -44,6 +44,9 @@ public class MobController {
 
     @SuppressWarnings("NewApi")
     public void process() {
+        if (mob.isDead()) {
+            return;
+        }
         if (isAttacking()) {
             Circle attackCircle = new Circle(mob.getPosition(), ATTACK_RADIUS);
             if (Intersector.overlaps(attackCircle, hero.getSprite().getBoundingRectangle())) {

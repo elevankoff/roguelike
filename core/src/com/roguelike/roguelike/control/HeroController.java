@@ -42,6 +42,9 @@ public class HeroController implements InputProcessor {
     }
 
     public void update(float delta) {
+        if (hero.isDead()) {
+            return;
+        }
         move(getNextDirection(delta));
     }
 
