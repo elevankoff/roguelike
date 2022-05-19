@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.roguelike.roguelike.ScreenManager;
 import com.roguelike.roguelike.control.HeroController;
+import com.roguelike.roguelike.control.MobController;
 import com.roguelike.roguelike.model.AliveObject;
 import com.roguelike.roguelike.model.GameContext;
 import com.roguelike.roguelike.model.GameObjectType;
@@ -40,6 +41,7 @@ public class GameScreen extends AbstractScreen{
     private AliveObject hero;
     private AliveObject mob;
     private HeroController heroController;
+    private MobController mobController;
     private MapManager mapManager;
     private OrthogonalTiledMapRenderer mapRenderer;
     private AssetManager assetManager;
@@ -92,6 +94,7 @@ public class GameScreen extends AbstractScreen{
 
         GameContext gameContext = createGameContext(mob, hero);
         heroController = new HeroController(hero, gameContext);
+        mobController = new MobController(mob, hero);
 
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(stage);
@@ -127,7 +130,7 @@ public class GameScreen extends AbstractScreen{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         updateHero(delta);
-        mob.update();
+        updateMob();
 
         camera.position.set(hero.getX() + hero.getSprite().getWidth() / 2, hero.getY() + hero.getSprite().getHeight() / 2, 100);
         camera.update();
@@ -145,15 +148,24 @@ public class GameScreen extends AbstractScreen{
         }
     }
 
+    private void updateMob() {
+        Vector2 mobNextPosition = mobController.getNextPosition();
+        Rectangle mobRectangle = new Rectangle(mob.getSprite().getBoundingRectangle());
+        mobRectangle.setPosition(mobNextPosition);
+        if (!isCollisionWithMapLayer(mobRectangle)) {
+            mobController.update();
+            mob.update();
+        }
+        mobController.process();
+    }
+
     private boolean isCollisionWithMapLayer(Rectangle objectRectangle) {
         MapLayer mapCollisionLayer = mapManager.getCollisionLayer();
         if (mapCollisionLayer == null) {
             return false;
         }
-        System.out.println("Rectangle: " + objectRectangle.getX() + " " + objectRectangle.getY());
 
         for (RectangleMapObject object : mapCollisionLayer.getObjects().getByType(RectangleMapObject.class)) {
-            System.out.println("Object: " + object.getRectangle().getY() + " " + object.getRectangle().getX());
             if (object.getRectangle().overlaps(objectRectangle)) {
                 return true;
             }

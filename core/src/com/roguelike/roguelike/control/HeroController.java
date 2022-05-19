@@ -9,19 +9,24 @@ import com.badlogic.gdx.math.Vector2;
 import com.roguelike.roguelike.model.AliveObject;
 import com.roguelike.roguelike.model.GameContext;
 
+import java.time.Instant;
 import java.util.List;
 
 public class HeroController implements InputProcessor {
+    private static final int attackPeriodMillis = 400;
     private static final int ATTACK_RADIUS = 20; // todo: make configurable
 
     private final AliveObject hero;
     private Vector2 currentDirection;
     private GameContext gameContext;
+    private Instant lastAttackTimestamp;
 
+    @SuppressWarnings("NewApi")
     public HeroController(AliveObject hero, GameContext gameContext) {
         this.hero = hero;
         this.currentDirection = Vector2.Zero;
         this.gameContext = gameContext;
+        this.lastAttackTimestamp = Instant.now();
     }
 
     public Vector2 getNextPosition(float delta) {
@@ -67,6 +72,7 @@ public class HeroController implements InputProcessor {
                     mob.hit(hero.getStrength());
                 }
             });
+            lastAttackTimestamp = Instant.now();
         }
     }
 
@@ -122,7 +128,9 @@ public class HeroController implements InputProcessor {
         return currentVerticalSpeed;
     }
 
+    @SuppressWarnings("NewApi")
     private boolean isAttacking() {
-        return Gdx.input.isKeyPressed(Input.Keys.SPACE);
+        return lastAttackTimestamp.isBefore(Instant.now().minusMillis(attackPeriodMillis))
+                && Gdx.input.isKeyPressed(Input.Keys.SPACE);
     }
 }
