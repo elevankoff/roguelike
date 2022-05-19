@@ -2,21 +2,17 @@ package com.roguelike.roguelike.view;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -26,17 +22,27 @@ import com.roguelike.roguelike.control.HeroController;
 import com.roguelike.roguelike.control.MobController;
 import com.roguelike.roguelike.model.AliveObject;
 import com.roguelike.roguelike.model.GameContext;
+import com.roguelike.roguelike.model.GameObject;
 import com.roguelike.roguelike.model.GameObjectType;
 import com.roguelike.roguelike.model.HeroFactory;
 import com.roguelike.roguelike.model.MobFactory;
+import com.roguelike.roguelike.model.bonus.BonusKitObject;
+import com.roguelike.roguelike.model.bonus.BonusKitSpawner;
 import com.roguelike.roguelike.model.map.MapConfig;
 import com.roguelike.roguelike.model.map.MapManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class GameScreen extends AbstractScreen{
     private final Map<GameObjectType, Texture> textures;
     private final HealthSpriteFactory healthSpriteFactory;
+    private List<BonusKitObject> bonusKits;
+    private BonusKitSpawner bonusKitSpawner;
+    private MapCollisionResolver mapCollisionResolver;
     private OrthographicCamera camera;
     private AliveObject hero;
     private AliveObject mob;
@@ -65,6 +71,7 @@ public class GameScreen extends AbstractScreen{
         mainTable = new Table();
         stage = new Stage();
         stage.addActor(mainTable);
+        bonusKits = new ArrayList<>();
     }
 
     //Вызывается когда в игре мы переключаемся на этот экран
@@ -74,6 +81,13 @@ public class GameScreen extends AbstractScreen{
         camera.translate(camera.viewportWidth, camera.viewportHeight);
 
         mapManager = new MapManager();
+        mapCollisionResolver = new MapCollisionResolver(mapManager);
+        bonusKitSpawner = new BonusKitSpawner(
+                textures.get(GameObjectType.FIRST_AID_KIT),
+                mapCollisionResolver,
+                10,
+                GAME_WORLD_WIDTH,
+                GAME_WORLD_HEIGHT);
         mapRenderer = new OrthogonalTiledMapRenderer(mapManager.getCurrentMap(), 1f);
         mapRenderer.setView(camera);
 
@@ -129,6 +143,7 @@ public class GameScreen extends AbstractScreen{
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        updateBonusKits();
         updateHero(delta);
         updateMob();
 
@@ -138,39 +153,37 @@ public class GameScreen extends AbstractScreen{
         mapRenderer.setView(camera);
     }
 
+    @SuppressWarnings("NewApi")
+    private void updateBonusKits() {
+        bonusKits = bonusKits.stream().filter(BonusKitObject::isNotUsed).collect(Collectors.toList());
+        Optional<BonusKitObject> bonusKitObjectO = bonusKitSpawner.spawn();
+        bonusKitObjectO.ifPresent(bonusKits::add);
+    }
+
+    @SuppressWarnings("NewApi")
     private void updateHero(float delta) {
+        bonusKits.forEach(bonusKit -> bonusKit.tryToUse(hero));
+        System.out.println("HERO=" + hero.getPosition());
         Vector2 heroNextPosition = heroController.getNextPosition(delta);
         Rectangle heroRectangle = new Rectangle(hero.getSprite().getBoundingRectangle());
         heroRectangle.setPosition(heroNextPosition);
-        if (!isCollisionWithMapLayer(heroRectangle)) {
+        if (!mapCollisionResolver.isCollisionWithMapLayer(heroRectangle)) {
             heroController.update(delta);
             hero.update();
         }
     }
 
+    @SuppressWarnings("NewApi")
     private void updateMob() {
+        bonusKits.forEach(bonusKit -> bonusKit.tryToUse(mob));
         Vector2 mobNextPosition = mobController.getNextPosition();
         Rectangle mobRectangle = new Rectangle(mob.getSprite().getBoundingRectangle());
         mobRectangle.setPosition(mobNextPosition);
-        if (!isCollisionWithMapLayer(mobRectangle)) {
+        if (!mapCollisionResolver.isCollisionWithMapLayer(mobRectangle)) {
             mobController.update();
             mob.update();
         }
         mobController.process();
-    }
-
-    private boolean isCollisionWithMapLayer(Rectangle objectRectangle) {
-        MapLayer mapCollisionLayer = mapManager.getCollisionLayer();
-        if (mapCollisionLayer == null) {
-            return false;
-        }
-
-        for (RectangleMapObject object : mapCollisionLayer.getObjects().getByType(RectangleMapObject.class)) {
-            if (object.getRectangle().overlaps(objectRectangle)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void renderInner() {
@@ -181,18 +194,29 @@ public class GameScreen extends AbstractScreen{
         mapBatch.begin();
         drawAliveObject(mapBatch, hero);
         drawAliveObject(mapBatch, mob);
+        drawBonusKits(mapBatch);
         mapBatch.end();
+    }
+
+    @SuppressWarnings("NewApi")
+    private void drawBonusKits(Batch mapBatch) {
+        bonusKits.forEach(kit -> drawGameObject(mapBatch, kit));
     }
 
     private void drawAliveObject(Batch mapBatch, AliveObject aliveObject) {
         if (aliveObject.isDead()) {
             return;
         }
+        drawGameObject(mapBatch, aliveObject);
         Sprite sprite = aliveObject.getSprite();
         mapBatch.draw(sprite.getTexture(), aliveObject.getX(), aliveObject.getY(), sprite.getWidth(), sprite.getHeight());
         Sprite healthSprite = healthSpriteFactory.create(aliveObject);
-        System.out.println(healthSprite.getX() + " " + healthSprite.getY() + " " + healthSprite.getWidth() + " " + healthSprite.getHeight());
         mapBatch.draw(healthSprite.getTexture(), healthSprite.getX(), healthSprite.getY(), healthSprite.getWidth(), healthSprite.getHeight());
+    }
+
+    private void drawGameObject(Batch mapBatch, GameObject gameObject) {
+        Sprite sprite = gameObject.getSprite();
+        mapBatch.draw(sprite.getTexture(), gameObject.getX(), gameObject.getY(), sprite.getWidth(), sprite.getHeight());
     }
 
     //Вызывается при изменении размеров экрана
