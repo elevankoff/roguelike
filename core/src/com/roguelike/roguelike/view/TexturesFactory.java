@@ -11,7 +11,7 @@ public class TexturesFactory {
     private static final String HERO_TEXTURE_PATH = "hero.png";
     private static final String MOB_TEXTURE_PATH = "monster.png"; // todo: make separate texture
     private static final String HEALTH_TEXTURE_PATH = "health.jpeg";
-    private static final String FIRST_AID_KIT_TEXTURE_PATH = "health.jpeg";
+    private static final String FIRST_AID_KIT_TEXTURE_PATH = "first-aid-kit.png";
 
     public static Map<GameObjectType, Texture> create() {
         Map<GameObjectType, Texture> textures = new HashMap<>();
