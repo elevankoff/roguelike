@@ -6,7 +6,7 @@ public class HeroFactory extends AliveObjectFactory {
     private static final float HEIGHT = 20f;
 
     private static final int START_HEALTH = 100;
-    private static final int START_STRENGTH = 2;
+    private static final int START_STRENGTH = 20;
 
     private static final float VERTICAL_SPEED = 180f;
     private static final float HORIZONTAL_SPEED = 180f;

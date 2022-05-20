@@ -1,6 +1,7 @@
 package com.roguelike.roguelike.model;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.roguelike.roguelike.model.bonus.BonusKit;
 
 public class AliveObject extends GameObject {
     protected final int maxHealth;
@@ -25,6 +26,14 @@ public class AliveObject extends GameObject {
         this.horizontalSpeed = horizontalSpeed;
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public boolean isDead() {
+        return health <= 0;
+    }
+
     public float getHealthPercent() {
         return (float) health / maxHealth;
     }
@@ -43,5 +52,12 @@ public class AliveObject extends GameObject {
 
     public void hit(int attackStrength) {
         this.health = Math.max(0, health - attackStrength);
+    }
+
+    public void useBonusKit(BonusKit bonusKit) {
+        if (isDead()) {
+            return;
+        }
+        health = Math.min(maxHealth, health + bonusKit.getHealthBonus());
     }
 }

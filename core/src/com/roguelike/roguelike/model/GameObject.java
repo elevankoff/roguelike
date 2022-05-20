@@ -17,6 +17,7 @@ public class GameObject {
 
         object = new Sprite(texture);
         object.setSize(width, height);
+        object.setPosition(x, y);
         object.setOrigin(width / 2f, height / 2f);
     }
 

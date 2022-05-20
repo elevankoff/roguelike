@@ -34,7 +34,7 @@ public class MapConfig {
     public static final MapConfig START = new MapConfig(
             MapName.START,
             "map.tmx",
-            new Vector2(1, 140),
+            new Vector2(1, 130),
             new Vector2(640, 380)
     );
 }

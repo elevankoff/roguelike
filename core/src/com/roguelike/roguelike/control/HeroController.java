@@ -8,20 +8,27 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.roguelike.roguelike.model.AliveObject;
 import com.roguelike.roguelike.model.GameContext;
+import com.roguelike.roguelike.view.Mob;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HeroController implements InputProcessor {
+    private static final int attackPeriodMillis = 400;
     private static final int ATTACK_RADIUS = 20; // todo: make configurable
 
     private final AliveObject hero;
     private Vector2 currentDirection;
     private GameContext gameContext;
+    private Instant lastAttackTimestamp;
 
+    @SuppressWarnings("NewApi")
     public HeroController(AliveObject hero, GameContext gameContext) {
         this.hero = hero;
         this.currentDirection = Vector2.Zero;
         this.gameContext = gameContext;
+        this.lastAttackTimestamp = Instant.now();
     }
 
     public Vector2 getNextPosition(float delta) {
@@ -37,6 +44,9 @@ public class HeroController implements InputProcessor {
     }
 
     public void update(float delta) {
+        if (hero.isDead()) {
+            return;
+        }
         move(getNextDirection(delta));
     }
 
@@ -60,13 +70,14 @@ public class HeroController implements InputProcessor {
     private void processInput() {
         currentDirection = new Vector2(getCurHorizontalSpeed(), getCurVerticalSpeed());
         if (isAttacking()) {
-            List<AliveObject> mobs = gameContext.getMobs();
+            List<AliveObject> mobs = gameContext.getMobs().stream().map(Mob::getObject).collect(Collectors.toList());
             Circle attackCircle = new Circle(hero.getPosition(), ATTACK_RADIUS);
             mobs.forEach(mob -> {
                 if (Intersector.overlaps(attackCircle, mob.getSprite().getBoundingRectangle())) {
                     mob.hit(hero.getStrength());
                 }
             });
+            lastAttackTimestamp = Instant.now();
         }
     }
 
@@ -122,7 +133,9 @@ public class HeroController implements InputProcessor {
         return currentVerticalSpeed;
     }
 
+    @SuppressWarnings("NewApi")
     private boolean isAttacking() {
-        return Gdx.input.isKeyPressed(Input.Keys.SPACE);
+        return lastAttackTimestamp.isBefore(Instant.now().minusMillis(attackPeriodMillis))
+                && Gdx.input.isKeyPressed(Input.Keys.SPACE);
     }
 }
