@@ -6,17 +6,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.roguelike.roguelike.model.AliveObject;
 
 import java.time.Instant;
+import java.util.Random;
 
-public class MobController {
+public class MobFollowingController {
     private static final int attackPeriodMillis = 2000;
-    private static final int ATTACK_RADIUS = 10; // todo: make configurable
+    private static final int ATTACK_RADIUS = 30;
 
     private final AliveObject mob;
     private final AliveObject hero;
     private Instant lastAttackTimestamp;
 
     @SuppressWarnings("NewApi")
-    public MobController(AliveObject mob, AliveObject hero) {
+    public MobFollowingController(AliveObject mob, AliveObject hero) {
         this.mob = mob;
         this.hero = hero;
         this.lastAttackTimestamp = Instant.now();
@@ -34,12 +35,8 @@ public class MobController {
         return new Vector2(xDir, yDir).nor();
     }
 
-    public void update() {
-        move(getNextDirection());
-    }
-
-    public void move(Vector2 direction) {
-        mob.setPosition(mob.getPosition().cpy().add(direction));
+    public void move(Vector2 position) {
+        mob.setPosition(position);
     }
 
     @SuppressWarnings("NewApi")
@@ -59,5 +56,17 @@ public class MobController {
     @SuppressWarnings("NewApi")
     private boolean isAttacking() {
         return lastAttackTimestamp.isBefore(Instant.now().minusMillis(attackPeriodMillis));
+    }
+
+    @SuppressWarnings("NewApi")
+    public Circle getAttackCircle() {
+        float attackReadiness = Math.min(
+                1f,
+                (float) Instant.now().minusMillis(lastAttackTimestamp.toEpochMilli()).toEpochMilli() / attackPeriodMillis);
+        float attackRadius = ATTACK_RADIUS * attackReadiness;
+        return new Circle(new Vector2(
+                mob.getX() + mob.getSprite().getOriginX(),
+                mob.getY() + mob.getSprite().getOriginY()
+        ), attackRadius);
     }
 }

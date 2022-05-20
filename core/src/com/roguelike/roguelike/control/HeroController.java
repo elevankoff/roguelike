@@ -8,9 +8,11 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.roguelike.roguelike.model.AliveObject;
 import com.roguelike.roguelike.model.GameContext;
+import com.roguelike.roguelike.view.Mob;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HeroController implements InputProcessor {
     private static final int attackPeriodMillis = 400;
@@ -68,7 +70,7 @@ public class HeroController implements InputProcessor {
     private void processInput() {
         currentDirection = new Vector2(getCurHorizontalSpeed(), getCurVerticalSpeed());
         if (isAttacking()) {
-            List<AliveObject> mobs = gameContext.getMobs();
+            List<AliveObject> mobs = gameContext.getMobs().stream().map(Mob::getObject).collect(Collectors.toList());
             Circle attackCircle = new Circle(hero.getPosition(), ATTACK_RADIUS);
             mobs.forEach(mob -> {
                 if (Intersector.overlaps(attackCircle, mob.getSprite().getBoundingRectangle())) {
