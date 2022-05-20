@@ -229,7 +229,6 @@ public class GameScreen extends AbstractScreen{
     private void drawCircle(Batch mapBatch, Circle circle) {
         for (float x = -circle.radius; x <= circle.radius; x += 0.1) {
             float y = (float) Math.sqrt(circle.radius*circle.radius - x*x);
-            System.out.println(x + " " + y);
             mapBatch.draw(textures.get(GameObjectType.FIRST_AID_KIT), circle.x + x, circle.y + y, 2, 2);
             mapBatch.draw(textures.get(GameObjectType.FIRST_AID_KIT), circle.x + x, circle.y - y, 2, 2);
         }

@@ -47,7 +47,6 @@ public class BonusKitSpawner {
         int retry = 0;
         while (isCollision(firstAidKit) && retry < MAX_RETRY_COUNT) {
             firstAidKit = spawnFirstAidKit();
-            System.out.println(firstAidKit.getPosition());
             retry++;
         }
         if (isCollision(firstAidKit)) {

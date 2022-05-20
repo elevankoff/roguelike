@@ -2,6 +2,7 @@ package com.roguelike.roguelike;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.LocalFileHandleResolver;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.roguelike.roguelike.model.map.MapConfig;
@@ -10,7 +11,7 @@ public class Utility {
     private static final GdxLogger logger = new GdxLogger(Utility.class);
 
     private static final AssetManager assetManager = new AssetManager();
-    private static final InternalFileHandleResolver filePathResolver = new InternalFileHandleResolver();
+    private static final LocalFileHandleResolver filePathResolver = new LocalFileHandleResolver();
 
     static {
         assetManager.setLoader(TiledMap.class, new TmxMapLoader(filePathResolver));
