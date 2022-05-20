@@ -33,7 +33,7 @@ public class MapConfig {
 
     public static final MapConfig START = new MapConfig(
             MapName.START,
-            "/Users/elevankoff/Desktop/IdeaProjects/roguelike/map.tmx",
+            "map.tmx",
             new Vector2(1, 130),
             new Vector2(640, 380)
     );
