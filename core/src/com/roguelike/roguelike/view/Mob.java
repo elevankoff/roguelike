@@ -36,7 +36,6 @@ public class Mob {
         controller.process();
     }
 
-    @SuppressWarnings("NewApi")
     public void tryToUseKits(List<BonusKitObject> bonusKits) {
         bonusKits.forEach(bonusKit -> bonusKit.tryToUse(object));
     }

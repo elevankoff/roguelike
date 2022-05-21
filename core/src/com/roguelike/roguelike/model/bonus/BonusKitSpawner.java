@@ -21,7 +21,6 @@ public class BonusKitSpawner {
 
     private Instant lastSpawn;
 
-    @SuppressWarnings("NewApi")
     public BonusKitSpawner(
             Texture firstAidTexture,
             MapCollisionResolver mapCollisionResolver,
@@ -37,7 +36,6 @@ public class BonusKitSpawner {
         this.lastSpawn = Instant.now();
     }
 
-    @SuppressWarnings("NewApi")
     public Optional<BonusKitObject> spawn() {
         Instant now = Instant.now();
         if (lastSpawn.isAfter(now.minusMillis(spawnPeriodMillis))) {

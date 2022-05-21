@@ -1,5 +1,6 @@
 package com.roguelike.roguelike;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.LocalFileHandleResolver;
@@ -11,7 +12,7 @@ public class Utility {
     private static final GdxLogger logger = new GdxLogger(Utility.class);
 
     private static final AssetManager assetManager = new AssetManager();
-    private static final LocalFileHandleResolver filePathResolver = new LocalFileHandleResolver();
+    private static final InternalFileHandleResolver filePathResolver = new InternalFileHandleResolver();
 
     static {
         assetManager.setLoader(TiledMap.class, new TmxMapLoader(filePathResolver));
@@ -19,6 +20,7 @@ public class Utility {
 
     public static void loadMapAsset(MapConfig mapConfig) {
         logger.log("Loading map asset " + mapConfig.getMapName().name());
+        System.out.println(Gdx.files.getLocalStoragePath());
         String loadPath = mapConfig.getLoadPath();
         if (loadPath == null) {
             throw new IllegalArgumentException("Load path should be non null");

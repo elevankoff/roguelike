@@ -156,20 +156,17 @@ public class GameScreen extends AbstractScreen{
         mapRenderer.setView(camera);
     }
 
-    @SuppressWarnings("NewApi")
     private void updateBonusKits() {
         bonusKits = bonusKits.stream().filter(BonusKitObject::isNotUsed).collect(Collectors.toList());
         Optional<BonusKitObject> bonusKitObjectO = bonusKitSpawner.spawn();
         bonusKitObjectO.ifPresent(bonusKits::add);
     }
 
-    @SuppressWarnings("NewApi")
     private void updateHero(float delta) {
         hero.tryToUseKits(bonusKits);
         hero.update(delta, mapCollisionResolver);
     }
 
-    @SuppressWarnings("NewApi")
     private void updateMobs() {
         long aliveMobs = mobs.stream().filter(mob -> !mob.getObject().isDead()).count();
         if (aliveMobs == 0) {
@@ -198,7 +195,6 @@ public class GameScreen extends AbstractScreen{
         return new Mob(mobFollowingController, mobObject);
     }
 
-    @SuppressWarnings("NewApi")
     private void renderInner() {
         mapRenderer.setView(camera);
         mapRenderer.render();
@@ -211,7 +207,6 @@ public class GameScreen extends AbstractScreen{
         mapBatch.end();
     }
 
-    @SuppressWarnings("NewApi")
     private void drawBonusKits(Batch mapBatch) {
         bonusKits.forEach(kit -> drawGameObject(mapBatch, kit));
     }
@@ -277,7 +272,6 @@ public class GameScreen extends AbstractScreen{
     }
 
     //Вызывается когда закрываем игру (уничтожение всех ресурсов)
-    @SuppressWarnings("NewApi")
     @Override
     public void dispose() {
         textures.forEach((type, texture) -> texture.dispose());
