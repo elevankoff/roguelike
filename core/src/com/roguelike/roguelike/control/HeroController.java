@@ -23,7 +23,6 @@ public class HeroController implements InputProcessor {
     private GameContext gameContext;
     private Instant lastAttackTimestamp;
 
-    @SuppressWarnings("NewApi")
     public HeroController(AliveObject hero, GameContext gameContext) {
         this.hero = hero;
         this.currentDirection = Vector2.Zero;
@@ -66,11 +65,10 @@ public class HeroController implements InputProcessor {
         return true;
     }
 
-    @SuppressWarnings("NewApi")
     private void processInput() {
         currentDirection = new Vector2(getCurHorizontalSpeed(), getCurVerticalSpeed());
         if (isAttacking()) {
-            List<AliveObject> mobs = gameContext.getMobs().stream().map(Mob::getObject).collect(Collectors.toList());
+            List<AliveObject> mobs = gameContext.getMobs().stream().map(Mob::getObject).toList();
             Circle attackCircle = new Circle(hero.getPosition(), ATTACK_RADIUS);
             mobs.forEach(mob -> {
                 if (Intersector.overlaps(attackCircle, mob.getSprite().getBoundingRectangle())) {
@@ -133,7 +131,6 @@ public class HeroController implements InputProcessor {
         return currentVerticalSpeed;
     }
 
-    @SuppressWarnings("NewApi")
     private boolean isAttacking() {
         return lastAttackTimestamp.isBefore(Instant.now().minusMillis(attackPeriodMillis))
                 && Gdx.input.isKeyPressed(Input.Keys.SPACE);

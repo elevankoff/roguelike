@@ -16,7 +16,6 @@ public class MobFollowingController {
     private final AliveObject hero;
     private Instant lastAttackTimestamp;
 
-    @SuppressWarnings("NewApi")
     public MobFollowingController(AliveObject mob, AliveObject hero) {
         this.mob = mob;
         this.hero = hero;
@@ -39,7 +38,6 @@ public class MobFollowingController {
         mob.setPosition(position);
     }
 
-    @SuppressWarnings("NewApi")
     public void process() {
         if (mob.isDead()) {
             return;
@@ -53,12 +51,10 @@ public class MobFollowingController {
         }
     }
 
-    @SuppressWarnings("NewApi")
     private boolean isAttacking() {
         return lastAttackTimestamp.isBefore(Instant.now().minusMillis(attackPeriodMillis));
     }
 
-    @SuppressWarnings("NewApi")
     public Circle getAttackCircle() {
         float attackReadiness = Math.min(
                 1f,
