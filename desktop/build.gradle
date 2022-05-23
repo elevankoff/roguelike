@@ -28,19 +28,17 @@ task debug(dependsOn: classes, type: JavaExec) {
     debug = true
 }
 
-task dist(type: Jar) {
+jar {
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     manifest {
-        attributes 'Main-Class': project.mainClassName
+        attributes "Main-Class": "com.roguelike.roguelike.DesktopLauncher"
     }
-    dependsOn configurations.runtimeClasspath
+
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    with jar
 }
 
-
-dist.dependsOn classes
+//dist.dependsOn classes
 
 eclipse.project.name = appName + "-desktop"
