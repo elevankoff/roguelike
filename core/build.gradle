@@ -1,9 +1,41 @@
+plugins {
+    id 'jacoco'
+}
+
 dependencies {
     implementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    implementation 'org.mockito:mockito-core:4.5.1'
+    implementation 'junit:junit:4.13.1'
+    implementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
 }
+
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "com/roguelike/roguelike/model/map/MapManager.class",
+                    "com/roguelike/roguelike/model/bonus/BonusKitSpawner.class",
+                    "com/roguelike/roguelike/GdxLogger.class",
+                    "com/roguelike/roguelike/Main.class",
+                    "com/roguelike/roguelike/ScreenManager.class",
+                    "com/roguelike/roguelike/Utility.class",
+                    "com/roguelike/roguelike/GdxTestRunner.class",
+                    "com/roguelike/roguelike/model/GameObjectType.class",
+                    "com/roguelike/roguelike/view/**",
+                    "com/roguelike/roguelike/control/**",
+                    "com/roguelike/roguelike/model/map/MapName.class",
+                    "**/*Test.class"
+            ])
+        }))
+    }
+}
+
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 sourceSets.main.java.srcDirs = [ "src/" ]

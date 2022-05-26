@@ -6,8 +6,6 @@ import com.badlogic.gdx.math.Intersector;
 import com.roguelike.roguelike.model.AliveObject;
 import com.roguelike.roguelike.model.GameObject;
 
-import java.time.Instant;
-
 public class BonusKitObject extends GameObject {
     private static final int AVAILABLE_RADIUS = 8;
 
@@ -28,8 +26,8 @@ public class BonusKitObject extends GameObject {
     }
 
     public boolean tryToUse(AliveObject aliveObject) {
-        Circle attackCircle = new Circle(super.getPosition(), AVAILABLE_RADIUS);
-        if (Intersector.overlaps(attackCircle, aliveObject.getSprite().getBoundingRectangle())) {
+        Circle usageCircle = new Circle(super.getPosition(), AVAILABLE_RADIUS);
+        if (Intersector.overlaps(usageCircle, aliveObject.getSprite().getBoundingRectangle())) {
             aliveObject.useBonusKit(use());
             return true;
         }

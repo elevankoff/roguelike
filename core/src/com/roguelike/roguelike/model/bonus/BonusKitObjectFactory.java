@@ -4,8 +4,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 public class BonusKitObjectFactory {
-    private static final int FIRST_AID_KIT_WIDTH = 10;
-    private static final int FIRST_AID_KIT_HEIGHT = 10;
+    // not private for tests
+    static final int FIRST_AID_KIT_WIDTH = 10;
+    static final int FIRST_AID_KIT_HEIGHT = 10;
 
     public static BonusKitObject createFirstAidKit(Texture texture, Vector2 position) {
         BonusKit bonusKit = BonusKit.newBuilder()
