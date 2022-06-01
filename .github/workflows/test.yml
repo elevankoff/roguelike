@@ -22,7 +22,7 @@ jobs:
           distribution: 'adopt'
 
       - name: run test
-        run: ./gradle clean build 
+        run: gradle clean build 
       - name: Publish Test Report
         if: ${{ always() }}
         uses: scacap/action-surefire-report@v1
