@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -22,6 +22,6 @@ jobs:
           distribution: 'adopt'
 
       - name: build
-        run: gradle clean build 
+        run: gradle clean build -Dorg.gradle.java.home=$JAVA_HOME
       - name: run test
-        run: gradle clean test
+        run: gradle clean test -Dorg.gradle.java.home=$JAVA_HOME
