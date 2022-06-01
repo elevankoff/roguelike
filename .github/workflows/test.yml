@@ -2,9 +2,9 @@ name: test
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
   workflow_dispatch:
 
@@ -25,6 +25,3 @@ jobs:
         run: gradle clean build 
       - name: run test
         run: gradle clean test
-      - name: Publish Test Report
-        if: ${{ always() }}
-        uses: scacap/action-surefire-report@v1
